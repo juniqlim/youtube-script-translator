@@ -1,0 +1,161 @@
+/* 사이드바 버튼 */
+#yt-script-btn-container {
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+#yt-script-btn-sidebar {
+  width: 100%;
+  padding: 10px 16px;
+  background: #065fd4;
+  color: white;
+  border: none;
+  border-radius: 18px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+#yt-script-btn-sidebar:hover {
+  background: #0056b3;
+}
+
+/* 스크립트 패널 */
+#yt-script-panel {
+  position: fixed;
+  top: 60px;
+  right: 20px;
+  width: 420px;
+  max-height: 70vh;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+  z-index: 10000;
+  display: none;
+  flex-direction: column;
+  font-family: 'Roboto', Arial, sans-serif;
+}
+
+.yt-script-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e0e0e0;
+  font-weight: 500;
+}
+
+.yt-script-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.yt-script-controls label {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.yt-script-controls button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+#yt-script-copy {
+  background: #065fd4;
+  color: white;
+}
+
+#yt-script-close {
+  background: #f0f0f0;
+}
+
+/* 원본/번역 버튼 영역 */
+.yt-script-actions {
+  display: flex;
+  gap: 8px;
+  padding: 10px 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.yt-script-actions button {
+  flex: 1;
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.yt-script-actions button:hover {
+  background: #f5f5f5;
+}
+
+.yt-script-actions button.active {
+  background: #065fd4;
+  color: white;
+  border-color: #065fd4;
+}
+
+.yt-script-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+#yt-script-content {
+  padding: 16px;
+  overflow-y: auto;
+  max-height: calc(70vh - 110px);
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* 다크모드 */
+html[dark] #yt-script-panel,
+[dark] #yt-script-panel {
+  background: #212121;
+  color: #fff;
+}
+
+html[dark] .yt-script-header,
+[dark] .yt-script-header {
+  border-bottom-color: #383838;
+}
+
+html[dark] .yt-script-actions,
+[dark] .yt-script-actions {
+  border-bottom-color: #383838;
+}
+
+html[dark] .yt-script-actions button,
+[dark] .yt-script-actions button {
+  background: #333;
+  border-color: #555;
+  color: #fff;
+}
+
+html[dark] .yt-script-actions button:hover,
+[dark] .yt-script-actions button:hover {
+  background: #444;
+}
+
+html[dark] .yt-script-actions button.active,
+[dark] .yt-script-actions button.active {
+  background: #065fd4;
+  border-color: #065fd4;
+}
+
+html[dark] #yt-script-close,
+[dark] #yt-script-close {
+  background: #383838;
+  color: #fff;
+}

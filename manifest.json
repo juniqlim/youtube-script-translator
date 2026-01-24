@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Script Copier",
+  "version": "1.1",
+  "description": "YouTube 영상의 자막을 추출하고 번역합니다",
+  "permissions": ["clipboardWrite", "storage"],
+  "host_permissions": ["*://*.youtube.com/*", "https://generativelanguage.googleapis.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/watch*"],
+      "js": ["content.js"],
+      "css": ["styles.css"]
+    }
+  ],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  }
+}
