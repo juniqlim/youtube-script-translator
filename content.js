@@ -154,7 +154,15 @@
 
     document.getElementById('yt-script-close').onclick = () => panel.style.display = 'none';
     document.getElementById('yt-script-copy').onclick = copyToClipboard;
-    document.getElementById('yt-script-timestamp').onchange = () => displayContent();
+    document.getElementById('yt-script-timestamp').onchange = () => {
+      translatedText = ''; // 타임스탬프 변경 시 번역 캐시 초기화
+      if (isShowingTranslation) {
+        isShowingTranslation = false;
+        document.getElementById('yt-script-original').classList.add('active');
+        document.getElementById('yt-script-translate').classList.remove('active');
+      }
+      displayContent();
+    };
     document.getElementById('yt-script-original').onclick = showOriginal;
     document.getElementById('yt-script-translate').onclick = translateScript;
 
@@ -173,6 +181,7 @@
   async function translateScript() {
     const content = document.getElementById('yt-script-content');
     const translateBtn = document.getElementById('yt-script-translate');
+    const withTimestamp = document.getElementById('yt-script-timestamp').checked;
 
     if (translatedText) {
       // 이미 번역됨 - 토글
@@ -187,8 +196,13 @@
     translateBtn.textContent = '번역중...';
     translateBtn.disabled = true;
 
+    // 타임스탬프 포함 여부에 따라 텍스트 구성
+    const textToTranslate = withTimestamp
+      ? currentTranscript.map(t => `${formatTime(t.start)} ${t.text}`).join('\n')
+      : originalText;
+
     try {
-      translatedText = await translateWithGemini(originalText);
+      translatedText = await translateWithGemini(textToTranslate);
       isShowingTranslation = true;
       document.getElementById('yt-script-original').classList.remove('active');
       translateBtn.classList.add('active');
