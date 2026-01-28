@@ -248,7 +248,7 @@
   // 메인 로직
   async function loadScript() {
     createPanel();
-    panel.style.display = 'block';
+    panel.style.display = 'flex';
 
     const content = document.getElementById('yt-script-content');
     content.textContent = '로딩중...';
