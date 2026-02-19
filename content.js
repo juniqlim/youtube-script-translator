@@ -113,6 +113,34 @@
     return data.candidates?.[0]?.content?.parts?.[0]?.text || '번역 실패';
   }
 
+  let segmentMinutes = 30; // 기본 30분
+
+  // 트랜스크립트를 구간별로 그룹핑
+  function groupBySegment(transcript, segmentSeconds) {
+    const segments = [];
+    let current = { startSec: 0, endSec: segmentSeconds, items: [] };
+
+    for (const item of transcript) {
+      while (item.start >= current.endSec) {
+        if (current.items.length > 0) segments.push(current);
+        const nextStart = current.endSec;
+        current = { startSec: nextStart, endSec: nextStart + segmentSeconds, items: [] };
+      }
+      current.items.push(item);
+    }
+    if (current.items.length > 0) segments.push(current);
+    return segments;
+  }
+
+  // 초를 mm:ss 또는 hh:mm:ss로 포맷
+  function formatTimePlain(seconds) {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.floor(seconds % 60);
+    if (h > 0) return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+  }
+
   // 타임스탬프 포맷
   function formatTime(seconds) {
     const h = Math.floor(seconds / 3600);
@@ -211,6 +239,43 @@
     }
   }
 
+  // 구간 복사 버튼 클릭 핸들러
+  async function copySegmentText(text, btn) {
+    try {
+      await navigator.clipboard.writeText(text);
+      const orig = btn.textContent;
+      btn.textContent = '복사됨!';
+      setTimeout(() => btn.textContent = orig, 1500);
+    } catch (e) {
+      alert('복사 실패: ' + e.message);
+    }
+  }
+
+  // 번역 텍스트를 타임스탬프 기준으로 구간 분할
+  function splitTranslatedBySegments(translated, segments) {
+    const lines = translated.split('\n');
+    const segmentTexts = [];
+    let lineIdx = 0;
+
+    for (const seg of segments) {
+      const segLines = [];
+      // 이 구간의 아이템 수만큼 줄을 할당
+      const count = seg.items.length;
+      for (let i = 0; i < count && lineIdx < lines.length; i++, lineIdx++) {
+        segLines.push(lines[lineIdx]);
+      }
+      segmentTexts.push(segLines.join('\n'));
+    }
+    // 남은 줄이 있으면 마지막 구간에 추가
+    if (lineIdx < lines.length) {
+      const remaining = lines.slice(lineIdx).join('\n');
+      if (segmentTexts.length > 0) {
+        segmentTexts[segmentTexts.length - 1] += '\n' + remaining;
+      }
+    }
+    return segmentTexts;
+  }
+
   // 컨텐츠 표시
   function displayContent() {
     const content = document.getElementById('yt-script-content');
@@ -221,15 +286,59 @@
       return;
     }
 
-    if (isShowingTranslation && translatedText) {
-      content.textContent = translatedText;
-    } else if (withTimestamp) {
-      content.textContent = currentTranscript
-        .map(t => `${formatTime(t.start)} ${t.text}`)
-        .join('\n');
-    } else {
-      content.textContent = originalText;
+    const segments = groupBySegment(currentTranscript, segmentMinutes * 60);
+    const needSegments = segments.length > 1;
+
+    if (!needSegments) {
+      // 구간이 1개면 기존 방식 그대로
+      if (isShowingTranslation && translatedText) {
+        content.textContent = translatedText;
+      } else if (withTimestamp) {
+        content.textContent = currentTranscript
+          .map(t => `${formatTime(t.start)} ${t.text}`)
+          .join('\n');
+      } else {
+        content.textContent = originalText;
+      }
+      return;
     }
+
+    // 구간이 여러 개: HTML로 렌더링
+    content.innerHTML = '';
+
+    let segmentTexts = null;
+    if (isShowingTranslation && translatedText) {
+      segmentTexts = splitTranslatedBySegments(translatedText, segments);
+    }
+
+    segments.forEach((seg, i) => {
+      const rangeLabel = `${formatTimePlain(seg.startSec)}~${formatTimePlain(seg.endSec)}`;
+
+      // 구간 헤더 (복사 버튼)
+      const btn = document.createElement('button');
+      btn.className = 'yt-script-segment-copy';
+      btn.textContent = `[${rangeLabel}] 복사`;
+
+      // 구간 텍스트 생성
+      let segText;
+      if (isShowingTranslation && segmentTexts) {
+        segText = segmentTexts[i] || '';
+      } else if (withTimestamp) {
+        segText = seg.items.map(t => `${formatTime(t.start)} ${t.text}`).join('\n');
+      } else {
+        segText = seg.items.map(t => t.text).join(' ');
+      }
+
+      btn.onclick = () => copySegmentText(segText, btn);
+
+      // 텍스트 영역
+      const textEl = document.createElement('div');
+      textEl.className = 'yt-script-segment-text';
+      textEl.textContent = segText;
+
+      content.appendChild(btn);
+      content.appendChild(textEl);
+    });
   }
 
   // 클립보드 복사
@@ -261,8 +370,9 @@
     document.getElementById('yt-script-original').classList.add('active');
     document.getElementById('yt-script-translate').classList.remove('active');
 
-    // API 키 없으면 번역 버튼 비활성화
-    const { geminiApiKey } = await chrome.storage.sync.get(['geminiApiKey']);
+    // 설정 로드
+    const { geminiApiKey, segmentMin } = await chrome.storage.sync.get(['geminiApiKey', 'segmentMin']);
+    segmentMinutes = segmentMin || 30;
     const translateBtn = document.getElementById('yt-script-translate');
     if (!geminiApiKey) {
       translateBtn.disabled = true;

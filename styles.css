@@ -151,6 +151,31 @@
   word-break: break-word;
 }
 
+/* 구간 복사 버튼 */
+.yt-script-segment-copy {
+  display: inline-block;
+  margin: 8px 0 4px;
+  padding: 4px 10px;
+  background: #e8f0fe;
+  color: #065fd4;
+  border: 1px solid #c2d7f2;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.yt-script-segment-copy:hover {
+  background: #d2e3fc;
+}
+
+.yt-script-segment-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin-bottom: 12px;
+}
+
 /* 다크모드 */
 html[dark] #yt-script-panel,
 [dark] #yt-script-panel {
@@ -190,4 +215,16 @@ html[dark] #yt-script-close,
 [dark] #yt-script-close {
   background: #383838;
   color: #fff;
+}
+
+html[dark] .yt-script-segment-copy,
+[dark] .yt-script-segment-copy {
+  background: #2a3a4a;
+  color: #8ab4f8;
+  border-color: #3c4d5e;
+}
+
+html[dark] .yt-script-segment-copy:hover,
+[dark] .yt-script-segment-copy:hover {
+  background: #344a5e;
 }
