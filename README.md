@@ -1,6 +1,6 @@
 # YouTube Script Translator
 
-YouTube 영상의 자막을 추출하고 번역하는 크롬 확장 프로그램
+YouTube 영상의 스크립트를 AI 번역에 적합한 크기로 잘라서 복사할 수 있는 크롬 확장 프로그램
 
 ## 스크린샷
 
