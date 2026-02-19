@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "YouTube Script Translator",
-  "version": "1.1",
-  "description": "YouTube 영상의 자막을 추출하고 번역합니다",
+  "name": "YouTube Script Spoon",
+  "version": "1.2",
+  "description": "YouTube 스크립트를 AI 번역에 적합한 크기로 잘라서 복사",
   "permissions": ["clipboardWrite", "storage"],
   "host_permissions": ["*://*.youtube.com/*", "https://generativelanguage.googleapis.com/*"],
   "content_scripts": [

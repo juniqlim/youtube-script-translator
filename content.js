@@ -1,4 +1,4 @@
-// YouTube Script Translator - Content Script
+// YouTube Script Spoon - Content Script
 
 (function() {
   'use strict';
@@ -421,7 +421,7 @@
 
     } catch (e) {
       content.textContent = '오류: ' + e.message;
-      console.error('YouTube Script Translator:', e);
+      console.error('YouTube Script Spoon:', e);
     }
   }
 
