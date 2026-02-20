@@ -485,25 +485,11 @@
           e.altKey === !!copyShortcut.alt &&
           e.code === keyCode) {
         e.preventDefault();
-        if (originalText) {
-          navigator.clipboard.writeText(originalText).then(() => {
-            const btn = document.getElementById('yt-script-copy');
-            if (btn) {
-              btn.textContent = '복사됨!';
-              setTimeout(() => btn.textContent = '복사', 1500);
-            }
-          });
-        } else {
+        if (!originalText) {
           await loadScript();
-          if (originalText) {
-            navigator.clipboard.writeText(originalText).then(() => {
-              const btn = document.getElementById('yt-script-copy');
-              if (btn) {
-                btn.textContent = '복사됨!';
-                setTimeout(() => btn.textContent = '복사', 1500);
-              }
-            });
-          }
+        }
+        if (originalText) {
+          await copyToClipboard();
         }
       }
     });
